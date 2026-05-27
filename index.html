@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Independent Developers | Premium Minimal Hacker Aesthetic</title>
+    <meta name="description" content="A group of independent developers building clean, optimized, and secure technical solutions.">
+    <style>
+        /* --- DESIGN SYSTEM & CUSTOM VARIABLES --- */
+        :root {
+            --bg-pure-black: #000000;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-muted: #444444;
+            --accent-glow: rgba(255, 255, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(5, 5, 5, 0.65);
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- GLOBAL RESETS & BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background-color: var(--bg-pure-black);
+            font-family: var(--font-sans);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        /* --- CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-pure-black);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* --- BACKGROUND LAYER & CANVAS --- */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Film Grain Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            opacity: 0.02;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* --- INTRO ANIMATION & LAYOUT --- */
+        .app-container {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            max-width: 680px;
+            padding: 120px 24px;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: introReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
+        }
+
+        @keyframes introReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- HEADER BRANDING --- */
+        header {
+            margin-bottom: 80px;
+            text-align: center;
+        }
+
+        .logo-mark {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+        }
+
+        /* --- ACCORDION INTERFACE --- */
+        .accordion-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .accordion-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: var(--transition-smooth);
+            overflow: hidden;
+        }
+
+        /* Parent Group Dimming Logic */
+        .accordion-wrapper:hover .accordion-item:not(:hover):not(.active) {
+            opacity: 0.4;
+            filter: blur(1px);
+        }
+
+        .accordion-item:hover, .accordion-item.active {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 255, 255, 0.02);
+        }
+
+        /* Header Trigger Button */
+        .accordion-header {
+            width: 100%;
+            padding: 24px 32px;
+            background: transparent;
+            border: none;
+            outline: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+            position: relative;
+        }
+
+        .accordion-header h2 {
+            font-family: var(--font-sans);
+            font-size: 1.15rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+            transition: var(--transition-smooth);
+        }
+
+        .accordion-item:hover .accordion-header h2 {
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Icon Indicator */
+        .accordion-icon {
+            position: relative;
+            width: 14px;
+            height: 14px;
+            transition: var(--transition-smooth);
+        }
+
+        .accordion-icon::before,
+        .accordion-icon::after {
+            content: '';
+            position: absolute;
+            background-color: var(--text-secondary);
+            transition: var(--transition-smooth);
+        }
+
+        /* Horizontal bar */
+        .accordion-icon::before {
+            top: 6px;
+            left: 0;
+            width: 14px;
+            height: 2px;
+        }
+
+        /* Vertical bar */
+        .accordion-icon::after {
+            top: 0;
+            left: 6px;
+            width: 2px;
+            height: 14px;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(135deg);
+        }
+
+        .accordion-item.active .accordion-icon::before,
+        .accordion-item.active .accordion-icon::after {
+            background-color: var(--text-primary);
+        }
+
+        /* Panel Content Area */
+        .accordion-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            opacity: 0;
+            filter: blur(4px);
+        }
+
+        .accordion-item.active .accordion-panel {
+            opacity: 1;
+            filter: blur(0px);
+        }
+
+        .panel-content {
+            padding: 0 32px 32px 32px;
+        }
+
+        /* --- CONTENT TYPOGRAPHY --- */
+        ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 20px;
+        }
+
+        li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--text-muted);
+        }
+
+        /* Specific Highlight Styling for Contact Row */
+        .contact-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--text-secondary);
+            transition: var(--transition-smooth);
+        }
+
+        .contact-link:hover {
+            border-bottom-style: solid;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 600px) {
+            .app-container {
+                padding: 60px 16px;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .accordion-header {
+                padding: 20px 24px;
+            }
+            .panel-content {
+                padding: 0 24px 24px 24px;
+            }
+            li {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container">
+        <canvas id="digitalRainCanvas"></canvas>
+    </div>
+
+    <div class="noise-overlay"></div>
+
+    <main class="app-container">
+        
+        <header>
+            <span class="logo-mark">// CORE . SYS . STACK</span>
+            <h1>Independent Developers</h1>
+        </header>
+
+        <div class="accordion-wrapper">
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>Instructions to Client</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>We believe 50 percent of the work is already done when requirements are clear.</li>
+                            <li>Please gather all your requirements in a single document.</li>
+                            <li>Include example inputs and expected outputs.</li>
+                            <li>If possible, add real-world examples for better clarity.</li>
+                            <li>If you do not like documentation, feel free to reach out directly on X (formerly Twitter DM) so we can understand your problem better.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>Who are we?</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>We are a group of independent developers.</li>
+                            <li>Team includes interns, juniors, seniors, leads, and architects.</li>
+                            <li>Experience across semiconductor, transport, banking, and e-commerce industries.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>How do we offer low cost?</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>We reduce our fees, not the quality.</li>
+                            <li>No compromise on code, service, or client data.</li>
+                            <li>Quality and trust are our promise.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>Do we share client data with AI or use it for training?</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>No, we never use client data for AI training.</li>
+                            <li>If you want zero AI usage, we fully respect and follow that.</li>
+                            <li>If AI is allowed, we only use dummy data and simulated inputs.</li>
+                            <li>Real client data is never exposed.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>What is our development process?</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>Process depends on the task.</li>
+                            <li>60 to 70 percent effort goes into research and selecting the right tech.</li>
+                            <li>Workflow: Design &rarr; Review &rarr; Initial Draft &rarr; Review &rarr; continuous code review and testing.</li>
+                            <li>Focus on Python with clean, simple, human-readable code.</li>
+                            <li>End products are built for non-technical users.</li>
+                            <li>We use open-source and optimized tech to reduce cost.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>Who are we suitable for?</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>Startups or businesses in early stages.</li>
+                            <li>Anyone looking to use tech to improve or scale their work.</li>
+                            <li>Individuals who want support or growth in tech-related tasks.</li>
+                            <li>We manage your tech stack so you can focus on your core work.</li>
+                            <li>Your data and credentials remain fully under your control.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>Who are we not suitable for?</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>Not focused on web development.</li>
+                            <li>Small, friendly indie team, better suited for flexible and collaborative work.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" aria-expanded="false">
+                    <h2>How to contact us?</h2>
+                    <div class="accordion-icon"></div>
+                </button>
+                <div class="accordion-panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li>Simple just DM us on <a href="https://x.com/im_nora__" target="_blank" rel="noopener noreferrer" class="contact-link">X (Twitter)</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>&copy; 2026 // NULL_POINTER_PROMISE</p>
+        </footer>
+    </main>
+
+    <script>
+        /* --- ACCORDION INTERACTION LOGIC --- */
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const panel = header.nextElementSibling;
+                const isCurrentlyActive = item.classList.contains('active');
+                
+                // Collapse all open headers to enforce premium single-focus environment
+                document.querySelectorAll('.accordion-item').forEach(el => {
+                    el.classList.remove('active');
+                    el.querySelector('.accordion-panel').style.maxHeight = null;
+                    el.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+                });
+
+                // Toggle current state
+                if (!isCurrentlyActive) {
+                    item.classList.add('active');
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                    header.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        /* --- HIGH PERFORMANCE INTERACTIVE DIGITAL RAIN CANVAS --- */
+        const canvas = document.getElementById('digitalRainCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        // Custom specialized character list
+        const charPool = ['#', ';', ':', ',', '.', "'", '"', '(', ')', '{', '}', '[', ']', '*'];
+        const particles = [];
+        const mouse = { x: -1000, y: -1000, radius: 110 };
+        const ripples = [];
+
+        // Global ambient background wave factor
+        let globalOscillation = 0;
+
+        // Dynamic Resize Handling
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            generateParticles();
+        });
+
+        // Event Listeners for Interaction Physics
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+        });
+
+        window.addEventListener('click', (e) => {
+            createRipple(e.clientX, e.clientY);
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * height; // Distribute across vertical start
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = -20;
+                this.speedY = 1.2 + Math.random() * 2.5; // Multi-layered depth speeds
+                this.size = Math.floor(9 + Math.random() * 8); // Size layers
+                this.opacity = 0.15 + Math.random() * 0.65;
+                this.char = charPool[Math.floor(Math.random() * charPool.length)];
+                
+                // Group string probability mechanics
+                this.isGroupedSequence = Math.random() < 0.04;
+                if (this.isGroupedSequence) {
+                    const seqLength = 2 + Math.floor(Math.random() * 3);
+                    this.char = "";
+                    for(let i=0; i<seqLength; i++){
+                        this.char += charPool[Math.floor(Math.random() * charPool.length)];
+                    }
+                }
+
+                // Physics modifiers
+                this.offsetX = 0;
+                this.offsetY = 0;
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.friction = 0.92;
+                this.returnSpeed = 0.05;
+            }
+
+            update() {
+                // Continuous fallback flow
+                this.y += this.speedY;
+
+                // Mouse Vector Proximity Interaction Physics
+                const dx = mouse.x - (this.x + this.offsetX);
+                const dy = mouse.y - (this.y + this.offsetY);
+                const distance = Math.hypot(dx, dy);
+
+                if (distance < mouse.radius) {
+                    const force = (mouse.radius - distance) / mouse.radius;
+                    // Vector computation pushing outward
+                    const angle = Math.atan2(dy, dx);
+                    const pushForce = force * 6; 
+
+                    this.velocityX -= Math.cos(angle) * pushForce;
+                    this.velocityY -= Math.sin(angle) * pushForce;
+                }
+
+                // Apply velocity and friction matrices
+                this.offsetX += this.velocityX;
+                this.offsetY += this.velocityY;
+                this.velocityX *= this.friction;
+                this.velocityY *= this.friction;
+
+                // Return offsets naturally back to original linear coordinate streams
+                this.offsetX += (0 - this.offsetX) * this.returnSpeed;
+
+                // Recycled checks once out of boundary arrays
+                if (this.y > height + 40) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                const drawX = this.x + this.offsetX;
+                const drawY = this.y + this.offsetY;
+
+                ctx.save();
+                ctx.font = `${this.size}px var(--font-mono)`;
+                
+                // Soft cinematic glow profiles
+                ctx.shadowBlur = this.speedY > 2.8 ? 8 : 3;
+                ctx.shadowColor = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                
+                // Fast-moving subtle directional motion blur simulation
+                if(this.speedY > 2.8) {
+                    ctx.globalAlpha = this.opacity * 0.4;
+                    ctx.fillText(this.char, drawX, drawY - this.speedY);
+                    ctx.globalAlpha = this.opacity;
+                }
+
+                ctx.fillText(this.char, drawX, drawY);
+                ctx.restore();
+            }
+        }
+
+        class Ripple {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 2;
+                this.maxRadius = 60 + Math.random() * 40;
+                this.opacity = 0.8;
+                this.speed = 2.5;
+            }
+
+            update() {
+                this.radius += this.speed;
+                this.opacity -= 0.02;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.lineWidth = 1.5;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        function generateParticles() {
+            particles.length = 0;
+            // Density proportional scaling factor
+            const density = Math.floor((width * height) / 9000);
+            const targetedDensity = Math.min(Math.max(density, 60), 160);
+            for (let i = 0; i < targetedDensity; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function createRipple(x, y) {
+            if(ripples.length > 8) ripples.shift();
+            ripples.push(new Ripple(x, y));
+        }
+
+        // Loop Runner Orchestrator
+        function engineLoop() {
+            // Screen blank clear with slight operational trail
+            ctx.clearRect(0, 0, width, height);
+
+            globalOscillation += 0.003;
+            // Subtle ambient movement calculation
+            const ambientShiftX = Math.sin(globalOscillation) * 0.2;
+
+            // Render and process background particles
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += ambientShiftX;
+                p.update();
+                p.draw();
+            }
+
+            // Render and process click ripple waves
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const r = ripples[i];
+                r.update();
+                r.draw();
+                if (r.opacity <= 0 || r.radius >= r.maxRadius) {
+                    ripples.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(engineLoop);
+        }
+
+        // Initialize Engine
+        generateParticles();
+        engineLoop();
+    </script>
+</body>
+</html>
